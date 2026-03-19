@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LunchMate — หาเพื่อนกินข้าว</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     NAVBAR
+     ══════════════════════════════════════════════════ -->
+<nav class="navbar">
+  <a class="logo" href="#" onclick="goTo('feed');return false;">LUNCH<span>MATE</span></a>
+
+  <div class="nav-links">
+    <button class="nav-link" data-page="feed" onclick="goTo('feed')">
+      <span class="nl-icon">▶</span>
+      <span class="nl-label">หน้าหลัก</span>
+    </button>
+    <button class="nav-link" data-page="search" onclick="goTo('search')">
+      <span class="nl-icon">🔍</span>
+      <span class="nl-label">ค้นหา</span>
+    </button>
+    <button class="nav-link" data-page="post" onclick="goTo('post')">
+      <span class="nl-icon">✚</span>
+      <span class="nl-label">โพสต์ใหม่</span>
+    </button>
+    <button class="nav-link" data-page="profile" onclick="goTo('profile')">
+      <span class="nl-icon">👤</span>
+      <span class="nl-label">โปรไฟล์</span>
+    </button>
+  </div>
+
+  <div class="nav-right">
+    <button class="nav-post-btn" onclick="goTo('post')">
+      <span>+</span> ชวนกินข้าว
+    </button>
+    <div class="nav-avatar" onclick="goTo('profile')" title="โปรไฟล์">
+      <span id="nav-avatar-emoji">😊</span>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ══════════════════════════════════════════════════
+     PAGE: FEED
+     ══════════════════════════════════════════════════ -->
+<section class="page" id="page-feed">
+
+  <!-- Hero Banner -->
+  <div class="feed-hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-badge">🎬 กำลังมองหาเพื่อน</div>
+      <h1 class="hero-title">ไม่อยากกินข้าว<br><span class="red">คนเดียว?</span></h1>
+      <p class="hero-sub">โพสต์ร้านที่อยากไป · หาเพื่อนร่วมโต๊ะ · หารค่าอาหาร<br>เพราะอาหารอร่อยขึ้นเมื่อกินกับเพื่อน</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="goTo('post')">▶ โพสต์ชวนกินข้าว</button>
+        <button class="btn-secondary" onclick="document.getElementById('feed-list').scrollIntoView({behavior:'smooth'})">
+          ℹ️ ดูโพสต์ทั้งหมด
+        </button>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><span class="hstat-num" id="stat-posts">0</span><span class="hstat-lbl">โพสต์วันนี้</span></div>
+        <div class="hstat"><span class="hstat-num" id="stat-people">0</span><span class="hstat-lbl">คนหาเพื่อน</span></div>
+        <div class="hstat"><span class="hstat-num" id="stat-open">0</span><span class="hstat-lbl">ที่นั่งว่าง</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="layout">
+    <div>
+      <div class="chip-row">
+        <button class="chip active" data-f="ทั้งหมด"  onclick="setFeedFilter('ทั้งหมด')">🍽️ ทั้งหมด</button>
+        <button class="chip"        data-f="เช้า"      onclick="setFeedFilter('เช้า')">☀️ มื้อเช้า</button>
+        <button class="chip"        data-f="กลางวัน"   onclick="setFeedFilter('กลางวัน')">🌤️ มื้อกลางวัน</button>
+        <button class="chip"        data-f="เย็น"      onclick="setFeedFilter('เย็น')">🌇 มื้อเย็น</button>
+        <button class="chip"        data-f="มื้อดึก"   onclick="setFeedFilter('มื้อดึก')">🌙 มื้อดึก</button>
+      </div>
+      <div class="sec-header">
+        <span class="sec-title">โพสต์ล่าสุด</span>
+        <span class="sec-badge" id="feed-count">0 โพสต์</span>
+      </div>
+      <div id="feed-list"></div>
+    </div>
+
+    <aside class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">สถิติวันนี้</div>
+        <div class="quick-stats">
+          <div class="qs-card"><span class="qs-num" id="sb-posts">0</span><span class="qs-lbl">โพสต์</span></div>
+          <div class="qs-card"><span class="qs-num" id="sb-people">0</span><span class="qs-lbl">คน</span></div>
+          <div class="qs-card"><span class="qs-num" id="sb-open">0</span><span class="qs-lbl">ที่ว่าง</span></div>
+          <div class="qs-card"><span class="qs-num">🔥</span><span class="qs-lbl">ฮอต</span></div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-title">ร้านฮิต</div>
+        <div id="trending-list"></div>
+      </div>
+
+      <div class="sidebar-cta">
+        <div class="cta-title">ยังไม่มีเพื่อนกินข้าว?</div>
+        <p class="cta-sub">โพสต์ร้านที่อยากไปเลย เดี๋ยวเพื่อนมาหาเอง อาหารอร่อยกว่าเมื่อกินด้วยกัน!</p>
+        <button class="btn-cta" onclick="goTo('post')">▶ โพสต์เดี๋ยวนี้</button>
+      </div>
+    </aside>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════
+     PAGE: SEARCH
+     ══════════════════════════════════════════════════ -->
+<section class="page" id="page-search">
+  <div class="search-hero">
+    <h2>ค้นหาเพื่อนกินข้าว</h2>
+    <p>ค้นหาตามร้าน ทำเล มื้อ หรือประเภทอาหารที่คุณต้องการ</p>
+    <div class="search-wrap">
+      <span class="s-icon">🔍</span>
+      <input class="search-inp" id="search-inp-el" type="search"
+        placeholder="ค้นหาร้าน, ทำเล, ประเภทอาหาร..."/>
+    </div>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-sub-title">กรองตามมื้อ</div>
+    <div class="filter-grid" style="margin-bottom:16px;">
+      <div class="filter-card meal-fc" onclick="toggleMealFilter('เช้า',this)"><span class="fc-icon">☀️</span><span class="fc-lbl">มื้อเช้า</span></div>
+      <div class="filter-card meal-fc" onclick="toggleMealFilter('กลางวัน',this)"><span class="fc-icon">🌤️</span><span class="fc-lbl">กลางวัน</span></div>
+      <div class="filter-card meal-fc" onclick="toggleMealFilter('เย็น',this)"><span class="fc-icon">🌇</span><span class="fc-lbl">มื้อเย็น</span></div>
+      <div class="filter-card meal-fc" onclick="toggleMealFilter('มื้อดึก',this)"><span class="fc-icon">🌙</span><span class="fc-lbl">มื้อดึก</span></div>
+    </div>
+    <div class="filter-sub-title">กรองตามประเภทอาหาร</div>
+    <div class="filter-grid" style="flex-wrap:wrap;">
+      <div class="filter-card food-fc" onclick="toggleFoodFilter('🍜',this)"><span class="fc-icon">🍜</span><span class="fc-lbl">ก๋วยเตี๋ยว</span></div>
+      <div class="filter-card food-fc" onclick="toggleFoodFilter('🍱',this)"><span class="fc-icon">🍱</span><span class="fc-lbl">ข้าว</span></div>
+      <div class="filter-card food-fc" onclick="toggleFoodFilter('🍔',this)"><span class="fc-icon">🍔</span><span class="fc-lbl">ฟาสต์ฟู้ด</span></div>
+      <div class="filter-card food-fc" onclick="toggleFoodFilter('🥘',this)"><span class="fc-icon">🥘</span><span class="fc-lbl">สุกี้/ชาบู</span></div>
+      <div class="filter-card food-fc" onclick="toggleFoodFilter('🍣',this)"><span class="fc-icon">🍣</span><span class="fc-lbl">ญี่ปุ่น</span></div>
+      <div class="filter-card food-fc" onclick="toggleFoodFilter('☕',this)"><span class="fc-icon">☕</span><span class="fc-lbl">คาเฟ่</span></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div>
+      <div class="sec-header">
+        <span class="sec-title">ผลการค้นหา</span>
+        <span class="sec-badge" id="search-count">พบ 0 โพสต์</span>
+      </div>
+      <div id="search-results"></div>
+    </div>
+    <aside class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">เคล็ดลับค้นหา</div>
+        <div style="font-size:.84rem;color:var(--text2);line-height:1.8;">
+          <p>▶ ใช้ชื่อร้านหรือแบรนด์ เช่น "MK"</p>
+          <p>▶ ค้นหาทำเล เช่น "BTS", "ตึก A"</p>
+          <p>▶ กดปุ่มประเภทอาหารเพื่อกรอง</p>
+          <p>▶ เลือกมื้อที่ต้องการให้แม่นขึ้น</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════
+     PAGE: POST
+     ══════════════════════════════════════════════════ -->
+<section class="page" id="page-post">
+  <div class="layout full">
+    <div class="sec-header" style="margin-bottom:20px;">
+      <span class="sec-title">โพสต์ชวนกินข้าว</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <div class="form-card">
+          <div class="form-card-title">ร้านและเวลานัด</div>
+          <div class="form-group">
+            <label class="form-label">ชื่อร้าน *</label>
+            <input type="text" class="form-input" id="f-restaurant" placeholder="เช่น MK Suki, ก๋วยเตี๋ยวเจ๊หน่าย..."/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">ทำเล / ใกล้ที่ไหน</label>
+            <input type="text" class="form-input" id="f-area" placeholder="เช่น ใกล้ตึก A, BTS อารีย์..."/>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">เวลา *</label>
+              <input type="time" class="form-input" id="f-time"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">มื้อ</label>
+              <select class="form-select" id="f-meal">
+                <option value="เช้า">☀️ มื้อเช้า</option>
+                <option value="กลางวัน" selected>🌤️ มื้อกลางวัน</option>
+                <option value="เย็น">🌇 มื้อเย็น</option>
+                <option value="มื้อดึก">🌙 มื้อดึก</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">รับได้กี่คน (รวมตัวเอง)</label>
+            <select class="form-select" id="f-slots">
+              <option value="2">2 คน</option>
+              <option value="3">3 คน</option>
+              <option value="4" selected>4 คน</option>
+              <option value="5">5 คน</option>
+              <option value="6">6 คน</option>
+              <option value="8">8 คน</option>
+              <option value="10">10 คน</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="form-card">
+          <div class="form-card-title">ประเภทอาหาร</div>
+          <div class="food-grid">
+            <button class="food-btn" onclick="selectFoodBtn('🍜',this)"><span class="fe">🍜</span>ก๋วยเตี๋ยว</button>
+            <button class="food-btn" onclick="selectFoodBtn('🍱',this)"><span class="fe">🍱</span>ข้าว</button>
+            <button class="food-btn" onclick="selectFoodBtn('🍔',this)"><span class="fe">🍔</span>ฟาสต์ฟู้ด</button>
+            <button class="food-btn" onclick="selectFoodBtn('🥘',this)"><span class="fe">🥘</span>สุกี้/ชาบู</button>
+            <button class="food-btn" onclick="selectFoodBtn('🍣',this)"><span class="fe">🍣</span>ญี่ปุ่น</button>
+            <button class="food-btn" onclick="selectFoodBtn('🌮',this)"><span class="fe">🌮</span>เม็กซิกัน</button>
+            <button class="food-btn" onclick="selectFoodBtn('🍕',this)"><span class="fe">🍕</span>พิซซ่า</button>
+            <button class="food-btn" onclick="selectFoodBtn('☕',this)"><span class="fe">☕</span>คาเฟ่</button>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="form-card-title">บอกเพิ่มเติม</div>
+          <div class="form-group" style="margin-bottom:0">
+            <textarea class="form-textarea" id="f-note" rows="5"
+              placeholder="เช่น ประมาณคนละ 100-150 บาท, เดินทางด้วยกันได้, ไม่กินเผ็ด..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-submit" onclick="submitPost()">▶ โพสต์ชวนกินข้าว!</button>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════
+     PAGE: PROFILE
+     ══════════════════════════════════════════════════ -->
+<section class="page" id="page-profile">
+  <div class="profile-hero">
+    <div class="prof-wrap">
+      <div class="p-avatar-big" id="prof-avatar" onclick="changeAvatar()" title="คลิกเพื่อสุ่ม avatar">😊</div>
+      <div>
+        <div class="p-name" id="prof-name">ผู้ใช้</div>
+        <div class="p-badge">🔴 นักกินผู้กล้า</div>
+        <div class="p-hint">คลิกที่รูปเพื่อเปลี่ยน avatar แบบสุ่ม</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-stats">
+    <div class="p-stat"><span class="p-stat-num" id="prof-s1">0</span><span class="p-stat-lbl">เข้าร่วมแล้ว</span></div>
+    <div class="p-stat"><span class="p-stat-num" id="prof-s2">0</span><span class="p-stat-lbl">โพสต์ของฉัน</span></div>
+    <div class="p-stat"><span class="p-stat-num" id="prof-s3">0</span><span class="p-stat-lbl">เพื่อนร่วมโต๊ะ</span></div>
+  </div>
+
+  <div class="layout">
+    <div>
+      <div class="sec-header" style="margin-bottom:14px;">
+        <span class="sec-title">โพสต์ที่เข้าร่วม</span>
+      </div>
+      <div id="my-posts-list"></div>
+    </div>
+    <aside class="sidebar">
+      <div class="edit-card">
+        <div class="edit-title">แก้ไขโปรไฟล์</div>
+        <div class="form-group">
+          <label class="form-label">ชื่อของคุณ</label>
+          <input type="text" class="form-input" id="prof-name-inp" placeholder="ชื่อของคุณ"/>
+        </div>
+        <button class="btn-save" onclick="saveName()">💾 บันทึก</button>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">เปลี่ยน Avatar</div>
+        <p style="font-size:.83rem;color:var(--text2);margin-bottom:12px;line-height:1.7;">
+          คลิกที่รูปโปรไฟล์ด้านซ้ายเพื่อสุ่ม avatar ใหม่แบบสุ่ม
+        </p>
+        <button onclick="changeAvatar()" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text2);border-radius:4px;padding:10px;font-family:'Noto Sans Thai',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='#fff'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">
+          🎲 สุ่ม Avatar ใหม่
+        </button>
+      </div>
+    </aside>
+  </div>
+</section>
+
+
+<div class="toast" id="toast"></div>
+<script src="js/main.js"></script>
+</body>
+</html>
