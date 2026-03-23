@@ -49,7 +49,17 @@
         <span class="nl-icon">👤</span>
         <span class="nl-lbl">โปรไฟล์</span>
       </button>
+      <button class="nav-link" data-page="members" onclick="goTo('members')">
+        <span class="nl-icon">🧑‍🤝‍🧑</span>
+        <span class="nl-lbl">สมาชิก</span>
+      </button>
     </div>
+
+    <!-- Login button -->
+    <button class="btn-login" id="nav-login-btn" onclick="goTo('login')">
+      <span>🔑</span>
+      <span id="nav-login-lbl">เข้าสู่ระบบ</span>
+    </button>
 
     <!-- CTA -->
     <button class="btn-cta" onclick="goTo('post')">
@@ -350,6 +360,117 @@
         <div class="spu-card-sub">มหาวิทยาลัยศรีปทุม<br>ชวนกินข้าว สร้างมิตรภาพ</div>
       </div>
     </aside>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: LOGIN
+     ═══════════════════════════════════════════════════ -->
+<section class="page" id="page-login">
+  <div class="login-outer">
+    <div class="login-card">
+
+      <!-- Logo header -->
+      <div class="login-logo">
+        <div class="login-logo-icon">🍜</div>
+        <div>
+          <div class="login-logo-name">Lunch<span>Mate</span></div>
+          <div class="login-logo-sub">SPU · Sripatum University</div>
+        </div>
+      </div>
+
+      <h2 class="login-title">เข้าสู่ระบบ</h2>
+      <p class="login-desc">เข้าสู่ระบบด้วยรหัสนักศึกษา เพื่อใช้งาน LunchMate</p>
+
+      <div class="fg">
+        <label class="fl">🎓 รหัสนักศึกษา</label>
+        <input type="text" class="fi" id="login-sid" placeholder="เช่น 68082679" maxlength="10"/>
+      </div>
+      <div class="fg">
+        <label class="fl">🔒 รหัสผ่าน</label>
+        <div style="position:relative">
+          <input type="password" class="fi" id="login-pass" placeholder="กรอกรหัสผ่าน"
+            onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:44px"/>
+          <button onclick="togglePass()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;" id="pass-eye" title="แสดง/ซ่อนรหัสผ่าน">👁️</button>
+        </div>
+      </div>
+
+      <div id="login-err" style="display:none;color:var(--lm-red);font-size:.82rem;margin-bottom:12px;padding:9px 12px;background:#fff0f0;border:1px solid #ffc5c5;border-radius:8px;"></div>
+
+      <button class="btn-sub" onclick="doLogin()" style="margin-top:4px;">🚀 เข้าสู่ระบบ</button>
+
+      <div class="login-hint">
+        <span>💡 Demo: รหัส <b>68082679</b> รหัสผ่าน <b>1234</b></span>
+      </div>
+
+      <div class="login-divider"><span>หรือ</span></div>
+
+      <button class="btn-guest" onclick="doGuest()">👤 เข้าใช้แบบผู้เยี่ยมชม</button>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: MEMBERS (สมาชิกกลุ่ม)
+     ═══════════════════════════════════════════════════ -->
+<section class="page" id="page-members">
+  <div class="layout full">
+
+    <div class="members-hero">
+      <div class="members-hero-top">
+        <div class="hero-eyebrow">🎓 Sripatum University · IT Faculty</div>
+        <h1 class="hero-title" style="font-size:1.6rem;">สมาชิกกลุ่ม<span>ผู้พัฒนา</span></h1>
+        <p style="color:rgba(255,255,255,.75);font-size:.9rem;margin-top:6px;">SPU LunchMate — โปรเจกต์วิชา Web Application Development</p>
+      </div>
+    </div>
+
+    <div class="members-grid">
+
+      <div class="member-card">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#cc6600,#ffaa00)">👩‍🔬</div>
+        <div class="member-sid">67135288</div>
+        <div class="member-name">นางสาว ณัฐฐิตา พงษ์ไทย</div>
+        <div class="member-role">📋 Project Manager</div>
+      </div>
+
+      <div class="member-card">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#0066cc,#00aaff)">👨‍🔬</div>
+        <div class="member-sid">68050906</div>
+        <div class="member-name">นาย ชนาเมธ แก้วทนง</div>
+        <div class="member-role">🔍 Tester &amp; QA</div>
+      </div>
+
+      <div class="member-card">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#006633,#00C851)">👨‍💻</div>
+        <div class="member-sid">68082679</div>
+        <div class="member-name">นาย ชาคริต พละสุ</div>
+        <div class="member-role">💻 Developer &amp; UI/UX Designer</div>
+      </div>
+
+      <div class="member-card">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#cc3399,#ff66cc)">👩‍🔬</div>
+        <div class="member-sid">68107377</div>
+        <div class="member-name">นางสาว พรรวินท์ ศรีพิพัฒน์</div>
+        <div class="member-role">🔍 Tester &amp; QA</div>
+      </div>
+
+    </div>
+
+    <!-- Project info card -->
+    <div class="project-info-card">
+      <div class="pi-title">📦 เกี่ยวกับโปรเจกต์ SPU LunchMate</div>
+      <div class="pi-body">
+        <div class="pi-row"><span class="pi-label">📌 ชื่อโปรเจกต์</span><span>SPU LunchMate — หาเพื่อนกินข้าว</span></div>
+        <div class="pi-row"><span class="pi-label">🎓 รายวิชา</span><span>Web Application Development</span></div>
+        <div class="pi-row"><span class="pi-label">🏫 มหาวิทยาลัย</span><span>มหาวิทยาลัยศรีปทุม (SPU)</span></div>
+        <div class="pi-row"><span class="pi-label">🛠️ เทคโนโลยี</span><span>HTML · CSS · Vanilla JavaScript</span></div>
+        <div class="pi-row"><span class="pi-label">📅 ปีการศึกษา</span><span>2567 (2024)</span></div>
+      </div>
+    </div>
+
   </div>
 </section>
 
