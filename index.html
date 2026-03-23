@@ -31,8 +31,8 @@
 
     <div class="nav-divider"></div>
 
-    <!-- Center Nav Links -->
-    <div class="nav-links">
+    <!-- Center Nav Links (desktop) -->
+    <div class="nav-links" id="nav-links-desktop">
       <button class="nav-link" data-page="feed" onclick="goTo('feed')">
         <span class="nl-icon">🏠</span>
         <span class="nl-lbl">หน้าหลัก</span>
@@ -55,19 +55,84 @@
       </button>
     </div>
 
-    <!-- Login button -->
+    <!-- Login button (desktop) -->
     <button class="btn-login" id="nav-login-btn" onclick="goTo('login')">
       <span>🔑</span>
       <span id="nav-login-lbl">เข้าสู่ระบบ</span>
     </button>
 
-    <!-- CTA -->
-    <button class="btn-cta" onclick="goTo('post')">
+    <!-- CTA (desktop) -->
+    <button class="btn-cta desktop-only" onclick="goTo('post')">
       <span>➕</span>
       <span>ชวนกินข้าว</span>
     </button>
 
+    <!-- Hamburger (mobile) -->
+    <button class="hamburger" id="hamburger-btn" onclick="toggleMenu()" aria-label="เมนู">
+      <span class="ham-line"></span>
+      <span class="ham-line"></span>
+      <span class="ham-line"></span>
+    </button>
+
   </div>
+
+  <!-- Mobile Dropdown Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu-inner">
+      <button class="mobile-nav-link" data-page="feed" onclick="goTo('feed');toggleMenu()">
+        <span class="mnl-icon">🏠</span>
+        <span>หน้าหลัก</span>
+      </button>
+      <button class="mobile-nav-link" data-page="search" onclick="goTo('search');toggleMenu()">
+        <span class="mnl-icon">🔍</span>
+        <span>ค้นหา</span>
+      </button>
+      <button class="mobile-nav-link" data-page="post" onclick="goTo('post');toggleMenu()">
+        <span class="mnl-icon">✏️</span>
+        <span>โพสต์ใหม่</span>
+      </button>
+      <button class="mobile-nav-link" data-page="profile" onclick="goTo('profile');toggleMenu()">
+        <span class="mnl-icon">👤</span>
+        <span>โปรไฟล์</span>
+      </button>
+      <button class="mobile-nav-link" data-page="members" onclick="goTo('members');toggleMenu()">
+        <span class="mnl-icon">🧑‍🤝‍🧑</span>
+        <span>สมาชิกกลุ่ม</span>
+      </button>
+      <div class="mobile-menu-divider"></div>
+      <button class="mobile-nav-link mobile-login-link" id="mobile-login-btn" onclick="mobileLoginClick()">
+        <span class="mnl-icon">🔑</span>
+        <span id="mobile-login-lbl">เข้าสู่ระบบ</span>
+      </button>
+      <button class="mobile-cta" onclick="goTo('post');toggleMenu()">➕ ชวนกินข้าว</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Overlay for mobile menu -->
+<div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+
+<!-- Bottom Nav Bar (mobile only) -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="bnav-item" data-page="feed" onclick="goTo('feed')">
+    <span class="bnav-icon">🏠</span>
+    <span class="bnav-lbl">หลัก</span>
+  </button>
+  <button class="bnav-item" data-page="search" onclick="goTo('search')">
+    <span class="bnav-icon">🔍</span>
+    <span class="bnav-lbl">ค้นหา</span>
+  </button>
+  <button class="bnav-fab" onclick="goTo('post')">
+    <span>➕</span>
+  </button>
+  <button class="bnav-item" data-page="profile" onclick="goTo('profile')">
+    <span class="bnav-icon">👤</span>
+    <span class="bnav-lbl">โปรไฟล์</span>
+  </button>
+  <button class="bnav-item" data-page="members" onclick="goTo('members')">
+    <span class="bnav-icon">🧑‍🤝‍🧑</span>
+    <span class="bnav-lbl">สมาชิก</span>
+  </button>
 </nav>
 
 
@@ -430,10 +495,10 @@
     <div class="members-grid">
 
       <div class="member-card">
-        <div class="member-avatar" style="background:linear-gradient(135deg,#cc6600,#ffaa00)">👩‍🔬</div>
-        <div class="member-sid">67135288</div>
-        <div class="member-name">นางสาว ณัฐฐิตา พงษ์ไทย</div>
-        <div class="member-role">📋 Project Manager</div>
+        <div class="member-avatar" style="background:linear-gradient(135deg,#006633,#00C851)">👨‍💻</div>
+        <div class="member-sid">68082679</div>
+        <div class="member-name">นาย ชาคริต พละสุ</div>
+        <div class="member-role">💻 Developer &amp; UI/UX Designer</div>
       </div>
 
       <div class="member-card">
@@ -444,17 +509,17 @@
       </div>
 
       <div class="member-card">
-        <div class="member-avatar" style="background:linear-gradient(135deg,#006633,#00C851)">👨‍💻</div>
-        <div class="member-sid">68082679</div>
-        <div class="member-name">นาย ชาคริต พละสุ</div>
-        <div class="member-role">💻 Developer &amp; UI/UX Designer</div>
-      </div>
-
-      <div class="member-card">
         <div class="member-avatar" style="background:linear-gradient(135deg,#cc3399,#ff66cc)">👩‍🔬</div>
         <div class="member-sid">68107377</div>
         <div class="member-name">นางสาว พรรวินท์ ศรีพิพัฒน์</div>
         <div class="member-role">🔍 Tester &amp; QA</div>
+      </div>
+
+      <div class="member-card">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#cc6600,#ffaa00)">👩‍🔬</div>
+        <div class="member-sid">67135288</div>
+        <div class="member-name">นางสาว ณัฐฐิตา พงษ์ไทย</div>
+        <div class="member-role">📋 Project Manager</div>
       </div>
 
     </div>
@@ -464,7 +529,7 @@
       <div class="pi-title">📦 เกี่ยวกับโปรเจกต์ SPU LunchMate</div>
       <div class="pi-body">
         <div class="pi-row"><span class="pi-label">📌 ชื่อโปรเจกต์</span><span>SPU LunchMate — หาเพื่อนกินข้าว</span></div>
-        <div class="pi-row"><span class="pi-label">🎓 รายวิชา</span><span>User Interface Web Application Development</span></div>
+        <div class="pi-row"><span class="pi-label">🎓 รายวิชา</span><span>Web Application Development</span></div>
         <div class="pi-row"><span class="pi-label">🏫 มหาวิทยาลัย</span><span>มหาวิทยาลัยศรีปทุม (SPU)</span></div>
         <div class="pi-row"><span class="pi-label">🛠️ เทคโนโลยี</span><span>HTML · CSS · Vanilla JavaScript</span></div>
         <div class="pi-row"><span class="pi-label">📅 ปีการศึกษา</span><span>2567 (2024)</span></div>
