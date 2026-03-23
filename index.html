@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SPU LunchMate — หาเพื่อนกินข้าว</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     NAVBAR — LINEMAN style, SPU branded
+     ═══════════════════════════════════════════════════ -->
+<nav class="navbar">
+  <div class="navbar-inner">
+
+    <!-- Logo -->
+    <a class="logo-block" href="#" onclick="goTo('feed');return false;">
+      <div class="logo-icon-wrap">🍜</div>
+      <div class="logo-text">
+        <span class="logo-name">Lunch<span>Mate</span></span>
+        <span class="logo-sub">Find your lunch buddy</span>
+      </div>
+    </a>
+
+    <!-- SPU Badge -->
+    <div class="spu-badge">
+      <div class="spu-badge-dot"></div>
+      SPU Official
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <!-- Center Nav Links (desktop) -->
+    <div class="nav-links" id="nav-links-desktop">
+      <button class="nav-link" data-page="feed" onclick="goTo('feed')">
+        <span class="nl-icon">🏠</span>
+        <span class="nl-lbl">หน้าหลัก</span>
+      </button>
+      <button class="nav-link" data-page="search" onclick="goTo('search')">
+        <span class="nl-icon">🔍</span>
+        <span class="nl-lbl">ค้นหา</span>
+      </button>
+      <button class="nav-link" data-page="post" onclick="goTo('post')">
+        <span class="nl-icon">✏️</span>
+        <span class="nl-lbl">โพสต์ใหม่</span>
+      </button>
+      <button class="nav-link" data-page="profile" onclick="goTo('profile')">
+        <span class="nl-icon">👤</span>
+        <span class="nl-lbl">โปรไฟล์</span>
+      </button>
+      <button class="nav-link" data-page="members" onclick="goTo('members')">
+        <span class="nl-icon">🧑‍🤝‍🧑</span>
+        <span class="nl-lbl">สมาชิก</span>
+      </button>
+    </div>
+
+    <!-- Login button (desktop) -->
+    <button class="btn-login" id="nav-login-btn" onclick="goTo('login')">
+      <span>🔑</span>
+      <span id="nav-login-lbl">เข้าสู่ระบบ</span>
+    </button>
+
+    <!-- CTA (desktop) -->
+    <button class="btn-cta desktop-only" onclick="goTo('post')">
+      <span>➕</span>
+      <span>ชวนกินข้าว</span>
+    </button>
+
+    <!-- Hamburger (mobile) -->
+    <button class="hamburger" id="hamburger-btn" onclick="toggleMenu()" aria-label="เมนู">
+      <span class="ham-line"></span>
+      <span class="ham-line"></span>
+      <span class="ham-line"></span>
+    </button>
+
+  </div>
+
+  <!-- Mobile Dropdown Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu-inner">
+      <button class="mobile-nav-link" data-page="feed" onclick="goTo('feed');toggleMenu()">
+        <span class="mnl-icon">🏠</span>
+        <span>หน้าหลัก</span>
+      </button>
+      <button class="mobile-nav-link" data-page="search" onclick="goTo('search');toggleMenu()">
+        <span class="mnl-icon">🔍</span>
+        <span>ค้นหา</span>
+      </button>
+      <button class="mobile-nav-link" data-page="post" onclick="goTo('post');toggleMenu()">
+        <span class="mnl-icon">✏️</span>
+        <span>โพสต์ใหม่</span>
+      </button>
+      <button class="mobile-nav-link" data-page="profile" onclick="goTo('profile');toggleMenu()">
+        <span class="mnl-icon">👤</span>
+        <span>โปรไฟล์</span>
+      </button>
+      <button class="mobile-nav-link" data-page="members" onclick="goTo('members');toggleMenu()">
+        <span class="mnl-icon">🧑‍🤝‍🧑</span>
+        <span>สมาชิกกลุ่ม</span>
+      </button>
+      <div class="mobile-menu-divider"></div>
+      <button class="mobile-nav-link mobile-login-link" id="mobile-login-btn" onclick="mobileLoginClick()">
+        <span class="mnl-icon">🔑</span>
+        <span id="mobile-login-lbl">เข้าสู่ระบบ</span>
+      </button>
+      <button class="mobile-cta" onclick="goTo('post');toggleMenu()">➕ ชวนกินข้าว</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Overlay for mobile menu -->
+<div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+
+<!-- Bottom Nav Bar (mobile only) -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="bnav-item" data-page="feed" onclick="goTo('feed')">
+    <span class="bnav-icon">🏠</span>
+    <span class="bnav-lbl">หลัก</span>
+  </button>
+  <button class="bnav-item" data-page="search" onclick="goTo('search')">
+    <span class="bnav-icon">🔍</span>
+    <span class="bnav-lbl">ค้นหา</span>
+  </button>
+  <button class="bnav-fab" onclick="goTo('post')">
+    <span>➕</span>
+  </button>
+  <button class="bnav-item" data-page="profile" onclick="goTo('profile')">
+    <span class="bnav-icon">👤</span>
+    <span class="bnav-lbl">โปรไฟล์</span>
+  </button>
+  <button class="bnav-item" data-page="members" onclick="goTo('members')">
+    <span class="bnav-icon">🧑‍🤝‍🧑</span>
+    <span class="bnav-lbl">สมาชิก</span>
+  </button>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: FEED
+     ═══════════════════════════════════════════════════ -->
+<section class="page" id="page-feed">
+  <div class="layout">
+
+    <!-- MAIN -->
+    <div>
+      <!-- Hero -->
+      <div class="feed-hero">
+        <div class="hero-top">
+          <div class="hero-eyebrow">🎓 Sripatum University · LunchMate</div>
+          <h1 class="hero-title">ไม่อยากกินข้าว<span>คนเดียว</span>?</h1>
+          <p class="hero-sub">หาเพื่อนร่วมโต๊ะ · หารค่าอาหาร · สนุกกว่าเดิม สำหรับนักศึกษา SPU</p>
+        </div>
+        <div class="hero-stats">
+          <div class="h-stat">
+            <span class="h-stat-num" id="stat-posts">0</span>
+            <span class="h-stat-lbl">โพสต์วันนี้</span>
+          </div>
+          <div class="h-stat">
+            <span class="h-stat-num" id="stat-people">0</span>
+            <span class="h-stat-lbl">คนหาเพื่อน</span>
+          </div>
+          <div class="h-stat">
+            <span class="h-stat-num" id="stat-open">0</span>
+            <span class="h-stat-lbl">ที่นั่งว่าง</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter tabs -->
+      <div class="filter-tabs">
+        <button class="ftab active" data-f="ทั้งหมด" onclick="setFeedFilter('ทั้งหมด')">🍽️ ทั้งหมด</button>
+        <button class="ftab" data-f="เช้า"     onclick="setFeedFilter('เช้า')">☀️ มื้อเช้า</button>
+        <button class="ftab" data-f="กลางวัน"  onclick="setFeedFilter('กลางวัน')">🌤️ กลางวัน</button>
+        <button class="ftab" data-f="เย็น"     onclick="setFeedFilter('เย็น')">🌇 มื้อเย็น</button>
+        <button class="ftab" data-f="มื้อดึก"  onclick="setFeedFilter('มื้อดึก')">🌙 มื้อดึก</button>
+      </div>
+
+      <div class="sec-hd">
+        <span class="sec-title">📋 โพสต์ล่าสุด</span>
+        <span class="sec-pill" id="feed-count">0 โพสต์</span>
+      </div>
+      <div id="feed-list"></div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <!-- SPU promo card -->
+      <div class="spu-card">
+        <div class="spu-card-logo">🎓 <span>SPU</span> LunchMate</div>
+        <div class="spu-card-sub">แพลตฟอร์มหาเพื่อนกินข้าวสำหรับนักศึกษา มหาวิทยาลัยศรีปทุม</div>
+        <button class="btn-spu" onclick="goTo('post')">➕ โพสต์ชวนกินข้าวเดี๋ยวนี้!</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="s-card">
+        <div class="s-card-title">📊 สถิติวันนี้</div>
+        <div class="stat-grid">
+          <div class="stat-box"><span class="stat-box-num" id="sb-posts">0</span><span class="stat-box-lbl">โพสต์</span></div>
+          <div class="stat-box"><span class="stat-box-num" id="sb-people">0</span><span class="stat-box-lbl">คนหาเพื่อน</span></div>
+          <div class="stat-box"><span class="stat-box-num" id="sb-open">0</span><span class="stat-box-lbl">ที่ว่าง</span></div>
+          <div class="stat-box"><span class="stat-box-num" id="sb-joined">0</span><span class="stat-box-lbl">ฉันเข้าร่วม</span></div>
+        </div>
+      </div>
+
+      <!-- Trending -->
+      <div class="s-card">
+        <div class="s-card-title">🔥 ร้านฮิตของ SPU</div>
+        <div id="trend-list"></div>
+      </div>
+
+    </aside>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: SEARCH
+     ═══════════════════════════════════════════════════ -->
+<section class="page" id="page-search">
+  <div class="layout">
+    <div>
+      <!-- Search hero -->
+      <div class="search-hero">
+        <div class="search-hero-top">
+          <h2>🔍 ค้นหาเพื่อนกินข้าว</h2>
+          <p>ค้นหาตามชื่อร้าน, ทำเล หรือประเภทอาหารที่อยากกิน</p>
+          <div class="search-wrap">
+            <span class="s-ico">🔍</span>
+            <input class="search-box" id="search-box-el" type="search"
+              placeholder="พิมพ์ชื่อร้าน, ทำเล, อาหาร..."/>
+          </div>
+        </div>
+
+        <!-- Meal pills -->
+        <div class="filter-pills-wrap">
+          <div class="filter-pills-label">⏰ กรองตามมื้อ</div>
+          <div class="filter-pills">
+            <div class="fpill meal-fp" onclick="toggleMealF('เช้า',this)">☀️ เช้า</div>
+            <div class="fpill meal-fp" onclick="toggleMealF('กลางวัน',this)">🌤️ กลางวัน</div>
+            <div class="fpill meal-fp" onclick="toggleMealF('เย็น',this)">🌇 เย็น</div>
+            <div class="fpill meal-fp" onclick="toggleMealF('มื้อดึก',this)">🌙 มื้อดึก</div>
+          </div>
+        </div>
+
+        <!-- Food pills -->
+        <div class="filter-pills-wrap" style="border-top:1px solid var(--lm-border)">
+          <div class="filter-pills-label">🍜 ประเภทอาหาร</div>
+          <div class="filter-pills">
+            <div class="fpill food-fp" onclick="toggleFoodF('🍜',this)">🍜 ก๋วยเตี๋ยว</div>
+            <div class="fpill food-fp" onclick="toggleFoodF('🍱',this)">🍱 ข้าว</div>
+            <div class="fpill food-fp" onclick="toggleFoodF('🍔',this)">🍔 ฟาสต์ฟู้ด</div>
+            <div class="fpill food-fp" onclick="toggleFoodF('🥘',this)">🥘 สุกี้/ชาบู</div>
+            <div class="fpill food-fp" onclick="toggleFoodF('🍣',this)">🍣 ญี่ปุ่น</div>
+            <div class="fpill food-fp" onclick="toggleFoodF('☕',this)">☕ คาเฟ่</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-hd">
+        <span class="sec-title">📋 ผลการค้นหา</span>
+        <span class="sec-pill" id="search-count">พบ 0 โพสต์</span>
+      </div>
+      <div id="search-results"></div>
+    </div>
+
+    <aside class="sidebar">
+      <div class="s-card">
+        <div class="s-card-title">💡 วิธีค้นหา</div>
+        <div style="font-size:.83rem;color:var(--lm-text2);line-height:1.8;">
+          <p>🔍 พิมพ์ชื่อร้าน เช่น "MK", "ชาบูชิ"</p>
+          <p>📍 ค้นตามทำเล เช่น "ตึก IT", "BTS"</p>
+          <p>🍜 กดปุ่ม filter เพื่อจำกัดผล</p>
+          <p>⏰ เลือกมื้อที่ต้องการ</p>
+        </div>
+      </div>
+      <div class="spu-card">
+        <div class="spu-card-logo">🎓 <span>SPU</span></div>
+        <div class="spu-card-sub">ยังไม่เจอโพสต์ที่ต้องการ? สร้างโพสต์ของคุณเองได้เลย!</div>
+        <button class="btn-spu" onclick="goTo('post')">➕ โพสต์เลย</button>
+      </div>
+    </aside>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: POST
+     ═══════════════════════════════════════════════════ -->
+<section class="page" id="page-post">
+  <div class="layout full">
+
+    <div class="sec-hd" style="margin-bottom:18px;">
+      <span class="sec-title" style="font-size:1.1rem;">✏️ โพสต์ชวนกินข้าว</span>
+      <span style="font-size:.8rem;color:var(--lm-text2);">กรอกข้อมูลร้านที่อยากไป</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+      <!-- LEFT -->
+      <div>
+        <div class="form-card">
+          <div class="form-card-hd">📍 ข้อมูลร้านและนัด</div>
+          <div class="fg">
+            <label class="fl">ชื่อร้าน <span style="color:var(--lm-red)">*</span></label>
+            <input type="text" class="fi" id="f-restaurant" placeholder="เช่น MK Suki หน้า SPU, ก๋วยเตี๋ยวเจ๊หน่าย..."/>
+          </div>
+          <div class="fg">
+            <label class="fl">📍 ทำเล / ใกล้ที่ไหน</label>
+            <input type="text" class="fi" id="f-area" placeholder="เช่น ใกล้ตึก IT, BTS ลาดพร้าว..."/>
+          </div>
+          <div class="f2col">
+            <div class="fg">
+              <label class="fl">🕐 เวลา <span style="color:var(--lm-red)">*</span></label>
+              <input type="time" class="fi" id="f-time"/>
+            </div>
+            <div class="fg">
+              <label class="fl">☀️ มื้อ</label>
+              <select class="fs" id="f-meal">
+                <option value="เช้า">☀️ เช้า</option>
+                <option value="กลางวัน" selected>🌤️ กลางวัน</option>
+                <option value="เย็น">🌇 เย็น</option>
+                <option value="มื้อดึก">🌙 มื้อดึก</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg" style="margin-bottom:0">
+            <label class="fl">👥 รับได้กี่คน (รวมตัวเอง)</label>
+            <select class="fs" id="f-slots">
+              <option value="2">2 คน</option>
+              <option value="3">3 คน</option>
+              <option value="4" selected>4 คน</option>
+              <option value="5">5 คน</option>
+              <option value="6">6 คน</option>
+              <option value="8">8 คน</option>
+              <option value="10">10 คน (โต๊ะใหญ่)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div>
+        <div class="form-card">
+          <div class="form-card-hd">🍜 ประเภทอาหาร</div>
+          <div class="food-grid">
+            <button class="food-opt" onclick="selFood('🍜',this)"><span class="fe">🍜</span>ก๋วยเตี๋ยว</button>
+            <button class="food-opt" onclick="selFood('🍱',this)"><span class="fe">🍱</span>ข้าว</button>
+            <button class="food-opt" onclick="selFood('🍔',this)"><span class="fe">🍔</span>ฟาสต์ฟู้ด</button>
+            <button class="food-opt" onclick="selFood('🥘',this)"><span class="fe">🥘</span>สุกี้/ชาบู</button>
+            <button class="food-opt" onclick="selFood('🍣',this)"><span class="fe">🍣</span>ญี่ปุ่น</button>
+            <button class="food-opt" onclick="selFood('🌮',this)"><span class="fe">🌮</span>เม็กซิกัน</button>
+            <button class="food-opt" onclick="selFood('🍕',this)"><span class="fe">🍕</span>พิซซ่า</button>
+            <button class="food-opt" onclick="selFood('☕',this)"><span class="fe">☕</span>คาเฟ่</button>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="form-card-hd">📝 บอกเพิ่มเติม</div>
+          <div class="fg" style="margin-bottom:0">
+            <textarea class="fta" id="f-note" rows="4"
+              placeholder="เช่น ประมาณคนละ 100-150 บาท, เดินทางด้วยกันได้, ไม่กินเผ็ด..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-sub" onclick="submitPost()">🚀 โพสต์ชวนกินข้าว!</button>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: PROFILE
+     ═══════════════════════════════════════════════════ -->
+<section class="page" id="page-profile">
+  <div class="layout">
+    <div>
+      <!-- Profile banner -->
+      <div class="profile-banner">
+        <div class="p-av" id="prof-av" onclick="changeAvatar()" title="คลิกเพื่อเปลี่ยน">🎓</div>
+        <div class="p-info">
+          <div class="p-name" id="prof-nm">นักศึกษา SPU</div>
+          <div class="p-tag">🎓 นักศึกษา มหาวิทยาลัยศรีปทุม</div>
+          <div class="p-hint">คลิกรูปเพื่อเปลี่ยน avatar · ข้อมูลเก็บในเครื่องของคุณ</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="p-stats">
+        <div class="ps"><span class="ps-num" id="ps1">0</span><span class="ps-lbl">เข้าร่วมแล้ว</span></div>
+        <div class="ps"><span class="ps-num" id="ps2">0</span><span class="ps-lbl">โพสต์ของฉัน</span></div>
+        <div class="ps"><span class="ps-num" id="ps3">0</span><span class="ps-lbl">เพื่อนร่วมโต๊ะ</span></div>
+      </div>
+
+      <div class="sec-hd" style="margin-bottom:12px;">
+        <span class="sec-title">🍽️ โพสต์ที่เข้าร่วม</span>
+      </div>
+      <div id="my-post-list"></div>
+    </div>
+
+    <aside class="sidebar">
+      <!-- Edit profile -->
+      <div class="edit-card">
+        <div class="edit-hd">✏️ แก้ไขโปรไฟล์</div>
+        <div class="fg">
+          <label class="fl">ชื่อของคุณ</label>
+          <input type="text" class="fi" id="prof-nm-inp" placeholder="เช่น มิน IT67"/>
+        </div>
+        <button class="btn-save" onclick="saveName()">💾 บันทึก</button>
+      </div>
+
+      <div class="s-card">
+        <div class="s-card-title">🎭 เปลี่ยน Avatar</div>
+        <p style="font-size:.82rem;color:var(--lm-text2);margin-bottom:12px;line-height:1.65;">
+          คลิกรูปโปรไฟล์ด้านซ้ายหรือกดปุ่มด้านล่างเพื่อสุ่ม avatar ใหม่
+        </p>
+        <button onclick="changeAvatar()" style="width:100%;background:var(--lm-gray);border:1.5px solid var(--lm-border);border-radius:8px;padding:10px;font-family:'Prompt',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .18s;color:var(--lm-text);" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary-dk)'" onmouseout="this.style.borderColor='var(--lm-border)';this.style.color='var(--lm-text)'">
+          🎲 สุ่ม Avatar ใหม่
+        </button>
+      </div>
+
+      <div class="spu-card">
+        <div class="spu-card-logo">🎓 <span>SPU</span></div>
+        <div class="spu-card-sub">มหาวิทยาลัยศรีปทุม<br>ชวนกินข้าว สร้างมิตรภาพ</div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: LOGIN
+     ═══════════════════════════════════════════════════ -->
+<section class="page" id="page-login">
+  <div class="login-outer">
+    <div class="login-card">
+
+      <!-- Logo header -->
+      <div class="login-logo">
+        <div class="login-logo-icon">🍜</div>
+        <div>
+          <div class="login-logo-name">Lunch<span>Mate</span></div>
+          <div class="login-logo-sub">SPU · Sripatum University</div>
+        </div>
+      </div>
+
+      <h2 class="login-title">เข้าสู่ระบบ</h2>
+      <p class="login-desc">เข้าสู่ระบบด้วยรหัสนักศึกษา เพื่อใช้งาน LunchMate</p>
+
+      <div class="fg">
+        <label class="fl">🎓 รหัสนักศึกษา</label>
+        <input type="text" class="fi" id="login-sid" placeholder="เช่น 68082679" maxlength="10"/>
+      </div>
+      <div class="fg">
+        <label class="fl">🔒 รหัสผ่าน</label>
+        <div style="position:relative">
+          <input type="password" class="fi" id="login-pass" placeholder="กรอกรหัสผ่าน"
+            onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:44px"/>
+          <button onclick="togglePass()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;" id="pass-eye" title="แสดง/ซ่อนรหัสผ่าน">👁️</button>
+        </div>
+      </div>
+
+      <div id="login-err" style="display:none;color:var(--lm-red);font-size:.82rem;margin-bottom:12px;padding:9px 12px;background:#fff0f0;border:1px solid #ffc5c5;border-radius:8px;"></div>
+
+      <button class="btn-sub" onclick="doLogin()" style="margin-top:4px;">🚀 เข้าสู่ระบบ</button>
+
+      <div class="login-hint">
+        <span>💡 Demo: รหัส <b>68082679</b> รหัสผ่าน <b>1234</b></span>
+      </div>
+
+      <div class="login-divider"><span>หรือ</span></div>
+
+      <button class="btn-guest" onclick="doGuest()">👤 เข้าใช้แบบผู้เยี่ยมชม</button>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: MEMBERS (สมาชิกกลุ่ม)
+     ═══════════════════════════════════════════════════ -->
+<section class="page" id="page-members">
+  <div class="layout full">
+
+    <div class="members-hero">
+      <div class="members-hero-top">
+        <div class="hero-eyebrow">🎓 Sripatum University · IT Faculty</div>
+        <h1 class="hero-title" style="font-size:1.6rem;">สมาชิกกลุ่ม<span>ผู้พัฒนา</span></h1>
+        <p style="color:rgba(255,255,255,.75);font-size:.9rem;margin-top:6px;">SPU LunchMate — โปรเจกต์วิชา Web Application Development</p>
+      </div>
+    </div>
+
+    <div class="members-grid">
+
+      <div class="member-card">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#006633,#00C851)">👨‍💻</div>
+        <div class="member-sid">68082679</div>
+        <div class="member-name">นาย ชาคริต พละสุ</div>
+        <div class="member-role">💻 Developer &amp; UI/UX Designer</div>
+      </div>
+
+      <div class="member-card">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#0066cc,#00aaff)">👨‍🔬</div>
+        <div class="member-sid">68050906</div>
+        <div class="member-name">นาย ชนาเมธ แก้วทนง</div>
+        <div class="member-role">🔍 Tester &amp; QA</div>
+      </div>
+
+      <div class="member-card">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#cc3399,#ff66cc)">👩‍🔬</div>
+        <div class="member-sid">68107377</div>
+        <div class="member-name">นางสาว พรรวินท์ ศรีพิพัฒน์</div>
+        <div class="member-role">🔍 Tester &amp; QA</div>
+      </div>
+
+      <div class="member-card">
+        <div class="member-avatar" style="background:linear-gradient(135deg,#cc6600,#ffaa00)">👩‍🔬</div>
+        <div class="member-sid">67135288</div>
+        <div class="member-name">นางสาว ณัฐฐิตา พงษ์ไทย</div>
+        <div class="member-role">📋 Project Manager</div>
+      </div>
+
+    </div>
+
+    <!-- Project info card -->
+    <div class="project-info-card">
+      <div class="pi-title">📦 เกี่ยวกับโปรเจกต์ SPU LunchMate</div>
+      <div class="pi-body">
+        <div class="pi-row"><span class="pi-label">📌 ชื่อโปรเจกต์</span><span>SPU LunchMate — หาเพื่อนกินข้าว</span></div>
+        <div class="pi-row"><span class="pi-label">🎓 รายวิชา</span><span>Web Application Development</span></div>
+        <div class="pi-row"><span class="pi-label">🏫 มหาวิทยาลัย</span><span>มหาวิทยาลัยศรีปทุม (SPU)</span></div>
+        <div class="pi-row"><span class="pi-label">🛠️ เทคโนโลยี</span><span>HTML · CSS · Vanilla JavaScript</span></div>
+        <div class="pi-row"><span class="pi-label">📅 ปีการศึกษา</span><span>2567 (2024)</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
