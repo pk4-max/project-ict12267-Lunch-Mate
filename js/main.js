@@ -13,7 +13,7 @@ const state = {
   page:'login', feedFilter:'ทั้งหมด',
   searchMeal:'', searchFood:'',
   selectedFood:'', myJoined:[], myName:'นักศึกษา SPU', myAvatar:'🎓',
-  posts:[], loggedIn:false,
+  posts:[], loggedIn:false, registeredUsers:{},
 };
 const EMOJIS=['🎓','😊','🙂','😄','🤩','😎','🥳','🤗','😁','🧑‍🎓'];
 
@@ -27,13 +27,14 @@ function loadState(){
       state.myAvatar=s.myAvatar||'🎓';
       state.posts=s.posts||[];
       state.loggedIn=s.loggedIn||false;
+      state.registeredUsers=s.registeredUsers||{};
     }
   }catch(e){}
   // Always seed if posts are empty
   if(!state.posts.length) seed();
 }
 function save(){
-  localStorage.setItem('spu_lm',JSON.stringify({myJoined:state.myJoined,myName:state.myName,myAvatar:state.myAvatar,posts:state.posts,loggedIn:state.loggedIn}));
+  localStorage.setItem('spu_lm',JSON.stringify({myJoined:state.myJoined,myName:state.myName,myAvatar:state.myAvatar,posts:state.posts,loggedIn:state.loggedIn,registeredUsers:state.registeredUsers||{}}));
 }
 function seed(){
   state.posts=[
@@ -77,7 +78,7 @@ function toggleMenu(){
 }
 function mobileLoginClick(){
   toggleMenu();
-  if(state.loggedIn) doLogout();
+  if(state.loggedIn) showLogoutModal();
   else goTo('login');
 }
 function updateMobileMenu(page){
@@ -97,39 +98,50 @@ function goTo(page){
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.nav-link').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
   updateMobileMenu(page);
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({top:0,behavior:'instant'});
   if(page==='feed')    renderFeed();
   if(page==='search')  renderSearch();
   if(page==='profile') renderProfile();
 }
 
-/* ── CARD ─────────────────────────────────────────── */
 function cardHTML(p,idx){
   const pct=Math.round(p.joined/p.slots*100);
   const full=p.joined>=p.slots;
   const iJ=state.myJoined.includes(p.id);
-  const btnTxt=full&&!iJ?'😢 เต็มแล้ว':iJ?'✅ เข้าร่วมแล้ว':'เข้าร่วม';
-  const btnCls=full&&!iJ?'btn-join full':iJ?'btn-join joined':'btn-join';
-  const dis=(full&&!iJ)||iJ?'disabled':'';
+  // If joined: show cancel button. If full (and not joined): show full. Else: show join.
+  let btnTxt, btnCls, dis;
+  if(iJ){
+    btnTxt='↩️ ยกเลิก'; btnCls='btn-join cancel'; dis='';
+  } else if(full){
+    btnTxt='😢 เต็มแล้ว'; btnCls='btn-join full'; dis='disabled';
+  } else {
+    btnTxt='เข้าร่วม'; btnCls='btn-join'; dis='';
+  }
   const delay=(idx*0.05).toFixed(2);
   const cmts=p.comments.map(c=>`
     <div class="cmt-item">
       <span class="cmt-av">${c.av}</span>
       <div class="cmt-bub"><div class="cmt-name">${c.name}</div>${c.text}</div>
     </div>`).join('');
+  const imgHTML=p.image?`<div class="card-img-wrap"><img class="card-img" src="${p.image}" alt="รูปโพสต์" onclick="openImgModal('${p.id}')"/></div>`:'';
+  // Show delete button only for posts created by current user (first member)
+  const isOwner = p.members[0] === state.myName;
+  const deleteBtn = isOwner ? `<button class="btn-delete-post" onclick="askDeletePost(${p.id})" title="ลบโพสต์">🗑️</button>` : '';
   return `
-  <div class="post-card" style="animation-delay:${delay}s">
+  <div class="post-card" style="animation-delay:${delay}s" id="post-card-${p.id}">
     <div class="card-head">
       <div class="avatar">${p.avatar}</div>
       <div class="card-meta">
         <div class="card-name">${p.name}</div>
         <div class="card-time">${ago(p.createdAt)}</div>
       </div>
+      ${deleteBtn}
     </div>
     <div class="card-rest-pill">
       <span style="font-size:1.1rem">${p.foodEmoji}</span>
       <span class="card-rest-name">${p.restaurant}</span>
     </div>
+    ${imgHTML}
     <div class="card-body">
       <div class="card-note">${p.note}</div>
       <div class="card-tags">
@@ -231,13 +243,53 @@ function toggleFoodF(f,el){
   renderSearch();
 }
 
-/* ── JOIN ─────────────────────────────────────────── */
+/* ── JOIN / CANCEL ────────────────────────────────── */
 function joinPost(id){
   const p=state.posts.find(x=>x.id===id);
-  if(!p||p.joined>=p.slots||state.myJoined.includes(id)) return;
+  if(!p) return;
+  if(state.myJoined.includes(id)){
+    // Cancel join
+    p.joined=Math.max(0,p.joined-1);
+    p.members=p.members.filter(m=>m!==state.myName);
+    state.myJoined=state.myJoined.filter(x=>x!==id);
+    save(); renderCurrent();
+    toast('↩️ ยกเลิกการเข้าร่วมแล้ว');
+    return;
+  }
+  if(p.joined>=p.slots) return;
   p.joined++; p.members.push(state.myName); state.myJoined.push(id);
   save(); renderCurrent();
   toast(`✅ เข้าร่วมสำเร็จ! เจอกันตอน ${p.time} น. นะ`,'green');
+}
+
+/* ── IMAGE UPLOAD ─────────────────────────────────── */
+let pendingImg = null;
+function imgDragOver(e){ e.preventDefault(); document.getElementById('img-upload-zone').classList.add('drag-over'); }
+function imgDragLeave(e){ document.getElementById('img-upload-zone').classList.remove('drag-over'); }
+function imgDrop(e){
+  e.preventDefault();
+  document.getElementById('img-upload-zone').classList.remove('drag-over');
+  const file=e.dataTransfer.files[0]; if(file&&file.type.startsWith('image/')) readImgFile(file);
+}
+function imgSelected(e){ const file=e.target.files[0]; if(file) readImgFile(file); }
+function readImgFile(file){
+  if(file.size>5*1024*1024){ toast('⚠️ รูปใหญ่เกิน 5MB'); return; }
+  const r=new FileReader();
+  r.onload=ev=>{
+    pendingImg=ev.target.result;
+    document.getElementById('img-placeholder').style.display='none';
+    document.getElementById('img-preview-wrap').style.display='flex';
+    document.getElementById('img-preview').src=pendingImg;
+  };
+  r.readAsDataURL(file);
+}
+function removeImg(e){
+  e.stopPropagation();
+  pendingImg=null;
+  document.getElementById('img-placeholder').style.display='flex';
+  document.getElementById('img-preview-wrap').style.display='none';
+  document.getElementById('img-preview').src='';
+  document.getElementById('f-img-input').value='';
 }
 
 /* ── BANNER CAROUSEL ──────────────────────────────── */
@@ -359,11 +411,31 @@ function submitPost(){
   const area=document.getElementById('f-area')?.value.trim();
   const note=document.getElementById('f-note')?.value.trim();
   if(!restaurant||!time){toast('⚠️ กรุณากรอกชื่อร้านและเวลา');return;}
-  const np={id:Date.now(),name:state.myName,avatar:state.myAvatar,restaurant,foodEmoji:state.selectedFood||'🍽️',area:area||'',meal:meal||'กลางวัน',time,slots,joined:1,members:[state.myName],note:note||'ไม่มีรายละเอียดเพิ่มเติม',createdAt:Date.now(),comments:[]};
+  const np={id:Date.now(),name:state.myName,avatar:state.myAvatar,restaurant,foodEmoji:state.selectedFood||'🍽️',area:area||'',meal:meal||'กลางวัน',time,slots,joined:1,members:[state.myName],note:note||'ไม่มีรายละเอียดเพิ่มเติม',createdAt:Date.now(),comments:[],image:pendingImg||null};
   state.posts.push(np); state.myJoined.push(np.id); save();
   ['f-restaurant','f-time','f-note','f-area'].forEach(id=>{const el=document.getElementById(id);if(el) el.value='';});
   state.selectedFood=''; document.querySelectorAll('.food-opt').forEach(b=>b.classList.remove('sel'));
+  // Reset image
+  removeImg({stopPropagation:()=>{}});
   goTo('feed'); toast('🎉 โพสต์สำเร็จ! รอเพื่อนมาร่วมกันนะ','green');
+}
+
+/* ── IMAGE MODAL ──────────────────────────────────── */
+function openImgModal(id){
+  const p=state.posts.find(x=>x.id==id); if(!p||!p.image) return;
+  let m=document.getElementById('img-modal');
+  if(!m){
+    m=document.createElement('div'); m.id='img-modal'; m.className='img-modal';
+    m.innerHTML=`<div class="img-modal-bg" onclick="closeImgModal()"></div><div class="img-modal-box"><img id="img-modal-img" src="" alt=""/><button class="img-modal-close" onclick="closeImgModal()">✕</button></div>`;
+    document.body.appendChild(m);
+  }
+  document.getElementById('img-modal-img').src=p.image;
+  m.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeImgModal(){
+  const m=document.getElementById('img-modal'); if(m) m.classList.remove('open');
+  document.body.style.overflow='';
 }
 
 /* ── PROFILE ──────────────────────────────────────── */
@@ -414,7 +486,7 @@ function doLogin(){
     errEl.textContent = '⚠️ กรุณากรอกรหัสนักศึกษาและรหัสผ่าน';
     errEl.style.display = 'block'; return;
   }
-  const user = DEMO_USERS[sid];
+  const user = DEMO_USERS[sid] || state.registeredUsers?.[sid];
   if(!user || user.pass !== pass){
     errEl.textContent = '❌ รหัสนักศึกษาหรือรหัสผ่านไม่ถูกต้อง';
     errEl.style.display = 'block'; return;
@@ -454,7 +526,7 @@ function updateLoginUI(){
     if(state.loggedIn){
       btn.innerHTML = `<span>👋</span><span id="nav-login-lbl">ออกจากระบบ</span>`;
       btn.classList.add('logged');
-      btn.onclick = doLogout;
+      btn.onclick = showLogoutModal;
     } else {
       btn.innerHTML = `<span>🔑</span><span id="nav-login-lbl">เข้าสู่ระบบ</span>`;
       btn.classList.remove('logged');
@@ -466,10 +538,106 @@ function updateLoginUI(){
     mobileBtn.querySelector('.mnl-icon').textContent = state.loggedIn ? '👋' : '🔑';
   }
 }
-function togglePass(){
-  const inp = document.getElementById('login-pass');
+function togglePass(inputId, btnId){
+  const inp = document.getElementById(inputId || 'login-pass');
   if(!inp) return;
   inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+/* ── REGISTER ─────────────────────────────────────── */
+function switchAuthTab(tab){
+  const isLogin = tab === 'login';
+  document.getElementById('auth-login-panel').style.display = isLogin ? '' : 'none';
+  document.getElementById('auth-register-panel').style.display = isLogin ? 'none' : '';
+  document.getElementById('tab-login').classList.toggle('active', isLogin);
+  document.getElementById('tab-register').classList.toggle('active', !isLogin);
+  ['login-err','reg-err','reg-ok'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.display='none';
+  });
+}
+function doRegister(){
+  const name = document.getElementById('reg-name')?.value.trim();
+  const sid  = document.getElementById('reg-sid')?.value.trim();
+  const pass = document.getElementById('reg-pass')?.value;
+  const pass2= document.getElementById('reg-pass2')?.value;
+  const errEl= document.getElementById('reg-err');
+  const okEl = document.getElementById('reg-ok');
+  errEl.style.display='none'; okEl.style.display='none';
+
+  if(!name||!sid||!pass||!pass2){
+    errEl.textContent='⚠️ กรุณากรอกข้อมูลให้ครบทุกช่อง'; errEl.style.display='block'; return;
+  }
+  if(!/^[0-9]{8,10}$/.test(sid)){
+    errEl.textContent='⚠️ รหัสนักศึกษาต้องเป็นตัวเลข 8-10 หลัก'; errEl.style.display='block'; return;
+  }
+  if(pass.length < 4){
+    errEl.textContent='⚠️ รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร'; errEl.style.display='block'; return;
+  }
+  if(pass !== pass2){
+    errEl.textContent='⚠️ รหัสผ่านไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง'; errEl.style.display='block'; return;
+  }
+  if(DEMO_USERS[sid] || state.registeredUsers?.[sid]){
+    errEl.textContent='❌ รหัสนักศึกษานี้มีบัญชีอยู่แล้ว'; errEl.style.display='block'; return;
+  }
+  if(!state.registeredUsers) state.registeredUsers = {};
+  state.registeredUsers[sid] = { pass, name, avatar: EMOJIS[Math.floor(Math.random()*EMOJIS.length)] };
+  save();
+  okEl.textContent='✅ สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ';
+  okEl.style.display='block';
+  ['reg-name','reg-sid','reg-pass','reg-pass2'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  toast('🎉 สมัครสมาชิกสำเร็จ!', 'green');
+  setTimeout(()=>switchAuthTab('login'), 1500);
+}
+
+/* ── LOGOUT MODAL ─────────────────────────────────── */
+function showLogoutModal(){
+  const m = document.getElementById('logout-modal');
+  if(m){ m.style.display='flex'; requestAnimationFrame(()=>m.classList.add('open')); }
+  document.body.style.overflow='hidden';
+}
+function closeLogoutModal(e){
+  if(e && e.target !== document.getElementById('logout-modal')) return;
+  const m = document.getElementById('logout-modal');
+  if(m){ m.classList.remove('open'); setTimeout(()=>m.style.display='none',250); }
+  document.body.style.overflow='';
+}
+function confirmLogout(){
+  const m = document.getElementById('logout-modal');
+  if(m){ m.classList.remove('open'); setTimeout(()=>m.style.display='none',250); }
+  document.body.style.overflow='';
+  doLogout();
+}
+
+/* ── DELETE POST MODAL ────────────────────────────── */
+let _pendingDeleteId = null;
+function askDeletePost(id){
+  _pendingDeleteId = id;
+  const m = document.getElementById('delete-modal');
+  if(m){ m.style.display='flex'; requestAnimationFrame(()=>m.classList.add('open')); }
+  document.body.style.overflow='hidden';
+}
+function closeDeleteModal(e){
+  if(e && e.target !== document.getElementById('delete-modal')) return;
+  const m = document.getElementById('delete-modal');
+  if(m){ m.classList.remove('open'); setTimeout(()=>m.style.display='none',250); }
+  document.body.style.overflow='';
+  _pendingDeleteId = null;
+}
+function confirmDeletePost(){
+  const id = _pendingDeleteId;
+  const m = document.getElementById('delete-modal');
+  if(m){ m.classList.remove('open'); setTimeout(()=>m.style.display='none',250); }
+  document.body.style.overflow='';
+  _pendingDeleteId = null;
+  if(!id) return;
+  const idx = state.posts.findIndex(p=>p.id===id);
+  if(idx===-1) return;
+  state.posts.splice(idx,1);
+  state.myJoined = state.myJoined.filter(x=>x!==id);
+  save(); renderCurrent();
+  toast('🗑️ ลบโพสต์เรียบร้อยแล้ว');
 }
 
 /* ── TOAST / UTILS ────────────────────────────────── */
