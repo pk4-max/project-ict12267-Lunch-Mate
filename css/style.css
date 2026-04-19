@@ -88,6 +88,20 @@ body {
   padding:0 24px;
   gap:12px;
 }
+/* ใส่ที่ class ของปุ่ม หรือ navbar ของคุณ */
+.navbar, .nav-item, .btn, button {
+    -webkit-user-select: none;  /* สำหรับ Safari / Chrome บน iOS */
+    -moz-user-select: none;     /* สำหรับ Firefox */
+    -ms-user-select: none;      /* สำหรับ IE/Edge */
+    user-select: none;          /* มาตรฐาน */
+    
+    /* ป้องกันการเด้งเมนูเวลาคลิกค้างในมือถือ (iOS/Android) */
+    -webkit-touch-callout: none; 
+}
+.nav-links a, button {
+    touch-action: manipulation; /* ช่วยลด delay 300ms ในมือถือรุ่นเก่าและทำให้กดยอมรับ touch ได้ดีขึ้น */
+    cursor: pointer;
+}
 
 /* Logo block */
 .logo-block {
