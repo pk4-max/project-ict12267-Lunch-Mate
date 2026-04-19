@@ -4,6 +4,21 @@
    ===================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&family=Sarabun:wght@300;400;500;600&display=swap');
 
+/* ซ่อน Scrollbar สำหรับ Chrome, Safari และ Edge */
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* สำหรับ Firefox */
+html {
+    scrollbar-width: none;
+}
+
+/* สำหรับ IE และ Edge รุ่นเก่า */
+body {
+    -ms-overflow-style: none;
+}
+
 :root {
   /* ── LINEMAN palette ── */
   --lm-green:   #00C851;
@@ -41,7 +56,7 @@
 }
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; overflow-x:hidden; }
+html { scroll-behavior:smooth; }
 body {
   font-family:'Sarabun',sans-serif;
   background:#F7F7F7;
@@ -50,10 +65,8 @@ body {
   font-size:15px;
   line-height:1.5;
   overflow-x:hidden;
+  scrollbar-gutter:stable;
 }
-::-webkit-scrollbar { width:4px; }
-::-webkit-scrollbar-thumb { background:#ddd; border-radius:99px; }
-::-webkit-scrollbar-thumb:hover { background:#ccc; }
 
 /* ════════════════════════════════════════
    NAVBAR — LINEMAN style (white, clean,
@@ -589,6 +602,84 @@ body {
 .btn-join:hover { background:var(--primary-dk); transform:scale(1.03); }
 .btn-join.joined { background:#E8FAF0; color:var(--primary-dk); cursor:default; box-shadow:none; border:1px solid rgba(0,200,81,.3); }
 .btn-join.full   { background:var(--lm-gray); color:var(--lm-text3); cursor:not-allowed; box-shadow:none; }
+.btn-join.cancel {
+  background:#FFF0F0; color:var(--lm-red); border:1.5px solid #FFD0CC;
+  box-shadow:none;
+}
+.btn-join.cancel:hover { background:#FFE0DC; transform:scale(1.03); border-color:var(--lm-red); }
+
+/* ── Card image ── */
+.card-img-wrap {
+  margin:0 16px 10px;
+  border-radius:10px; overflow:hidden;
+  max-height:220px; cursor:zoom-in;
+}
+.card-img {
+  width:100%; height:100%; max-height:220px;
+  object-fit:cover; display:block;
+  transition:transform .22s;
+}
+.card-img:hover { transform:scale(1.02); }
+
+/* ── Image Upload Zone ── */
+.img-upload-zone {
+  border:2px dashed var(--lm-border); border-radius:12px;
+  background:var(--lm-gray); cursor:pointer;
+  transition:all .2s; min-height:130px;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+}
+.img-upload-zone:hover, .img-upload-zone.drag-over {
+  border-color:var(--primary); background:var(--primary-lt);
+}
+.img-upload-placeholder {
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:24px;
+}
+.img-upload-icon { font-size:2rem; }
+.img-upload-text { font-family:'Prompt',sans-serif; font-weight:600; font-size:.88rem; color:var(--lm-text2); }
+.img-upload-hint { font-size:.75rem; color:var(--lm-text3); }
+.img-preview-wrap {
+  width:100%; position:relative; display:flex;
+  align-items:center; justify-content:center;
+}
+.img-preview {
+  width:100%; max-height:200px; object-fit:cover;
+  border-radius:10px; display:block;
+}
+.img-remove-btn {
+  position:absolute; top:8px; right:8px;
+  background:rgba(0,0,0,.6); color:#fff; border:none;
+  border-radius:50%; width:28px; height:28px; font-size:.85rem;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:background .15s;
+}
+.img-remove-btn:hover { background:var(--lm-red); }
+
+/* ── Image Modal ── */
+.img-modal {
+  position:fixed; inset:0; z-index:2000;
+  display:none; align-items:center; justify-content:center;
+}
+.img-modal.open { display:flex; }
+.img-modal-bg {
+  position:absolute; inset:0;
+  background:rgba(0,0,0,.82); backdrop-filter:blur(4px);
+}
+.img-modal-box {
+  position:relative; z-index:1; max-width:90vw; max-height:90vh;
+  border-radius:14px; overflow:hidden;
+  box-shadow:0 16px 48px rgba(0,0,0,.5);
+  animation:cardIn .2s ease;
+}
+.img-modal-box img { display:block; max-width:90vw; max-height:88vh; object-fit:contain; }
+.img-modal-close {
+  position:absolute; top:10px; right:10px;
+  background:rgba(0,0,0,.6); color:#fff; border:none;
+  border-radius:50%; width:32px; height:32px; font-size:1rem;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.img-modal-close:hover { background:var(--lm-red); }
 
 /* comments */
 .card-cmts { padding:0 16px 12px; }
@@ -1503,4 +1594,166 @@ body {
   /* Prevent any element from overflowing viewport */
   .lp-float-badge { display:none; }
   img, video, iframe, table { max-width:100%; }
+}
+/* ═══════════════════════════════════════════════════
+   AUTH TABS (Login / Register)
+   ═══════════════════════════════════════════════════ */
+.auth-tabs {
+  display: flex;
+  gap: 6px;
+  background: var(--lm-gray);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 18px;
+}
+.auth-tab {
+  flex: 1;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-family: 'Prompt', sans-serif;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--lm-text2);
+  cursor: pointer;
+  transition: all .2s;
+}
+.auth-tab.active {
+  background: #fff;
+  color: var(--primary);
+  box-shadow: 0 1px 4px rgba(0,0,0,.12);
+}
+
+/* ═══════════════════════════════════════════════════
+   DELETE BUTTON ON POST CARD
+   ═══════════════════════════════════════════════════ */
+.btn-delete-post {
+  margin-left: auto;
+  background: none;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: .9rem;
+  cursor: pointer;
+  color: var(--lm-text2);
+  opacity: 0;
+  transition: all .18s;
+  line-height: 1;
+}
+.post-card:hover .btn-delete-post {
+  opacity: 1;
+}
+.btn-delete-post:hover {
+  background: #fff0f0;
+  border-color: #ffc5c5;
+  color: var(--lm-red);
+  transform: scale(1.08);
+}
+
+/* ═══════════════════════════════════════════════════
+   CONFIRM MODAL (Logout / Delete)
+   ═══════════════════════════════════════════════════ */
+.lm-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity .25s;
+}
+.lm-modal-overlay.open {
+  opacity: 1;
+}
+.lm-modal {
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 32px 28px;
+  max-width: 360px;
+  width: calc(100% - 40px);
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  transform: translateY(20px) scale(.96);
+  transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.lm-modal-overlay.open .lm-modal {
+  transform: translateY(0) scale(1);
+}
+.lm-modal-icon {
+  font-size: 2.6rem;
+  margin-bottom: 12px;
+  animation: modalIconBounce .5s ease;
+}
+@keyframes modalIconBounce {
+  0%   { transform: scale(0.5); opacity:0; }
+  70%  { transform: scale(1.15); }
+  100% { transform: scale(1); opacity:1; }
+}
+.lm-modal-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--lm-text);
+  margin-bottom: 8px;
+}
+.lm-modal-desc {
+  font-size: .87rem;
+  color: var(--lm-text2);
+  line-height: 1.65;
+  margin-bottom: 24px;
+}
+.lm-modal-actions {
+  display: flex;
+  gap: 10px;
+}
+.lm-modal-cancel {
+  flex: 1;
+  padding: 11px 16px;
+  border: 1.5px solid var(--lm-border);
+  border-radius: 10px;
+  background: var(--lm-gray);
+  font-family: 'Prompt', sans-serif;
+  font-size: .87rem;
+  font-weight: 700;
+  color: var(--lm-text2);
+  cursor: pointer;
+  transition: all .18s;
+}
+.lm-modal-cancel:hover {
+  border-color: #ccc;
+  background: #ebebeb;
+}
+.lm-modal-confirm {
+  flex: 1;
+  padding: 11px 16px;
+  border: none;
+  border-radius: 10px;
+  background: var(--spu-green);
+  font-family: 'Prompt', sans-serif;
+  font-size: .87rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: all .18s;
+}
+.lm-modal-confirm:hover {
+  background: var(--primary-dk);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,102,51,.3);
+}
+.lm-modal-confirm.danger {
+  background: var(--lm-red);
+}
+.lm-modal-confirm.danger:hover {
+  background: #c0392b;
+  box-shadow: 0 4px 12px rgba(220,38,38,.3);
+}
+
+@media (max-width:480px) {
+  .lm-modal { padding: 28px 20px 22px; }
+  .lm-modal-actions { flex-direction: column-reverse; }
+  .btn-delete-post { opacity: 1; }
 }
