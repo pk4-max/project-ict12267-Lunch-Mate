@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SPU LunchMate — หาเพื่อนกินข้าว</title>
   <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    /* Global overflow guard — ป้องกัน feed ล้นออกด้านขวา */
+    html, body { overflow-x: hidden; max-width: 100vw; }
+    #page-feed .layout > div:first-child { min-width: 0; }
+  </style>
 </head>
 <body>
 
@@ -408,6 +413,23 @@
               placeholder="เช่น ประมาณคนละ 100-150 บาท, เดินทางด้วยกันได้, ไม่กินเผ็ด..."></textarea>
           </div>
         </div>
+
+        <!-- IMAGE UPLOAD CARD -->
+        <div class="form-card">
+          <div class="form-card-hd">📷 เพิ่มรูปภาพ <span style="font-size:.75rem;font-weight:400;color:var(--lm-text2)">(ไม่บังคับ)</span></div>
+          <div class="img-upload-zone" id="img-upload-zone" onclick="document.getElementById('f-img-input').click()" ondragover="imgDragOver(event)" ondragleave="imgDragLeave(event)" ondrop="imgDrop(event)">
+            <input type="file" id="f-img-input" accept="image/*" style="display:none" onchange="imgSelected(event)"/>
+            <div class="img-upload-placeholder" id="img-placeholder">
+              <div class="img-upload-icon">📷</div>
+              <div class="img-upload-text">คลิกหรือลากรูปมาวางที่นี่</div>
+              <div class="img-upload-hint">รองรับ JPG, PNG, WEBP ขนาดไม่เกิน 5MB</div>
+            </div>
+            <div class="img-preview-wrap" id="img-preview-wrap" style="display:none">
+              <img id="img-preview" class="img-preview" src="" alt="preview"/>
+              <button class="img-remove-btn" onclick="removeImg(event)" title="ลบรูป">✕</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -678,27 +700,66 @@
             <div class="login-logo-sub">SPU · Sripatum University</div>
           </div>
         </div>
-        <h2 class="login-title">เข้าสู่ระบบ</h2>
-        <p class="login-desc">เข้าสู่ระบบด้วยรหัสนักศึกษา เพื่อใช้งาน LunchMate</p>
-        <div class="fg">
-          <label class="fl">🎓 รหัสนักศึกษา</label>
-          <input type="text" class="fi" id="login-sid" placeholder="68XXXXXX" maxlength="10"/>
+
+        <!-- Auth Tabs -->
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">🔑 เข้าสู่ระบบ</button>
+          <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">📝 สมัครสมาชิก</button>
         </div>
-        <div class="fg">
-          <label class="fl">🔒 รหัสผ่าน</label>
-          <div style="position:relative">
-            <input type="password" class="fi" id="login-pass" placeholder="กรอกรหัสผ่าน"
-              onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:44px"/>
-            <button onclick="togglePass()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;" id="pass-eye" title="แสดง/ซ่อนรหัสผ่าน">👁️</button>
+
+        <!-- LOGIN PANEL -->
+        <div id="auth-login-panel">
+          <p class="login-desc">เข้าสู่ระบบด้วยรหัสนักศึกษา เพื่อใช้งาน LunchMate</p>
+          <div class="fg">
+            <label class="fl">🎓 รหัสนักศึกษา</label>
+            <input type="text" class="fi" id="login-sid" placeholder="68XXXXXX" maxlength="10"/>
           </div>
+          <div class="fg">
+            <label class="fl">🔒 รหัสผ่าน</label>
+            <div style="position:relative">
+              <input type="password" class="fi" id="login-pass" placeholder="กรอกรหัสผ่าน"
+                onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:44px"/>
+              <button onclick="togglePass('login-pass','pass-eye')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;" id="pass-eye" title="แสดง/ซ่อนรหัสผ่าน">👁️</button>
+            </div>
+          </div>
+          <div id="login-err" style="display:none;color:var(--lm-red);font-size:.82rem;margin-bottom:12px;padding:9px 12px;background:#fff0f0;border:1px solid #ffc5c5;border-radius:8px;"></div>
+          <button class="btn-sub" onclick="doLogin()" style="margin-top:4px;">🚀 เข้าสู่ระบบ</button>
+          <div class="login-divider"><span>หรือ</span></div>
+          <button class="btn-guest" onclick="doGuest()">👤 เข้าใช้แบบผู้เยี่ยมชม</button>
         </div>
-        <div id="login-err" style="display:none;color:var(--lm-red);font-size:.82rem;margin-bottom:12px;padding:9px 12px;background:#fff0f0;border:1px solid #ffc5c5;border-radius:8px;"></div>
-        <button class="btn-sub" onclick="doLogin()" style="margin-top:4px;">🚀 เข้าสู่ระบบ</button>
-        <!--<div class="login-hint">
-          <span>💡 Demo: รหัส <b>68082679</b> รหัสผ่าน <b>1234</b></span>
-        </div>-->
-        <div class="login-divider"><span>หรือ</span></div>
-        <button class="btn-guest" onclick="doGuest()">👤 เข้าใช้แบบผู้เยี่ยมชม</button>
+
+        <!-- REGISTER PANEL -->
+        <div id="auth-register-panel" style="display:none">
+          <p class="login-desc">สร้างบัญชีใหม่ด้วยรหัสนักศึกษา SPU ของคุณ</p>
+          <div class="fg">
+            <label class="fl">👤 ชื่อ-นามสกุล <span style="color:var(--lm-red)">*</span></label>
+            <input type="text" class="fi" id="reg-name" placeholder="เช่น ชาคริต พละสุ"/>
+          </div>
+          <div class="fg">
+            <label class="fl">🎓 รหัสนักศึกษา <span style="color:var(--lm-red)">*</span></label>
+            <input type="text" class="fi" id="reg-sid" placeholder="68XXXXXX" maxlength="10"/>
+          </div>
+          <div class="fg">
+            <label class="fl">🔒 รหัสผ่าน <span style="color:var(--lm-red)">*</span></label>
+            <div style="position:relative">
+              <input type="password" class="fi" id="reg-pass" placeholder="ตั้งรหัสผ่าน (4 ตัวขึ้นไป)" style="padding-right:44px"/>
+              <button onclick="togglePass('reg-pass','reg-pass-eye')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;" id="reg-pass-eye" title="แสดง/ซ่อน">👁️</button>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">🔒 ยืนยันรหัสผ่าน <span style="color:var(--lm-red)">*</span></label>
+            <div style="position:relative">
+              <input type="password" class="fi" id="reg-pass2" placeholder="กรอกรหัสผ่านอีกครั้ง"
+                onkeydown="if(event.key==='Enter')doRegister()" style="padding-right:44px"/>
+              <button onclick="togglePass('reg-pass2','reg-pass2-eye')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;" id="reg-pass2-eye" title="แสดง/ซ่อน">👁️</button>
+            </div>
+          </div>
+          <div id="reg-err" style="display:none;color:var(--lm-red);font-size:.82rem;margin-bottom:12px;padding:9px 12px;background:#fff0f0;border:1px solid #ffc5c5;border-radius:8px;"></div>
+          <div id="reg-ok" style="display:none;color:#006633;font-size:.82rem;margin-bottom:12px;padding:9px 12px;background:#efffef;border:1px solid #a3e6b0;border-radius:8px;"></div>
+          <button class="btn-sub" onclick="doRegister()" style="margin-top:4px;">✅ สมัครสมาชิก</button>
+          <div class="login-divider"><span>มีบัญชีแล้ว?</span></div>
+          <button class="btn-guest" onclick="switchAuthTab('login')">🔑 เข้าสู่ระบบ</button>
+        </div>
       </div>
     </div>
   </div>
@@ -781,6 +842,32 @@
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
+
+<!-- ── LOGOUT CONFIRM MODAL ── -->
+<div class="lm-modal-overlay" id="logout-modal" onclick="closeLogoutModal(event)">
+  <div class="lm-modal">
+    <div class="lm-modal-icon">👋</div>
+    <div class="lm-modal-title">ออกจากระบบ?</div>
+    <div class="lm-modal-desc">คุณต้องการออกจากระบบใช่ไหม?<br>ข้อมูลการเข้าร่วมของคุณจะถูกล้าง</div>
+    <div class="lm-modal-actions">
+      <button class="lm-modal-cancel" onclick="closeLogoutModal()">❌ ยกเลิก</button>
+      <button class="lm-modal-confirm" onclick="confirmLogout()">👋 ออกจากระบบ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── DELETE POST CONFIRM MODAL ── -->
+<div class="lm-modal-overlay" id="delete-modal" onclick="closeDeleteModal(event)">
+  <div class="lm-modal">
+    <div class="lm-modal-icon">🗑️</div>
+    <div class="lm-modal-title">ลบโพสต์นี้?</div>
+    <div class="lm-modal-desc">โพสต์จะถูกลบถาวรและไม่สามารถกู้คืนได้</div>
+    <div class="lm-modal-actions">
+      <button class="lm-modal-cancel" onclick="closeDeleteModal()">❌ ยกเลิก</button>
+      <button class="lm-modal-confirm danger" onclick="confirmDeletePost()">🗑️ ลบโพสต์</button>
+    </div>
+  </div>
+</div>
 
 <script src="js/main.js"></script>
 </body>
